@@ -1,11 +1,14 @@
 properties([
-  parameters([string(defaultValue: '', description: 'Please enter VM IP ', name: 'nodeIP', trim: true)])])
+    parameters([string(defaultValue: '', description: 'Please enter VM IP', name: 'nodeIP', trim: true),
+    string(defaultValue: '', description: 'Please enter the version', name: 'branch', trim: true)
+    ])
+    ])
 
-if (nodeIP.trim()) {
+if (nodeIP?.trim()) {
     node {
         withCredentials([sshUserPrivateKey(credentialsId: 'jenkins-master-key', keyFileVariable: 'key', passphraseVariable: '', usernameVariable: 'username')]) {
             stage('Pull Repo'){
-                   git branch:'release-1.0', changelog: false, poll: false, url: 'https://github.com/ikambarov/melodi.git' 
+                   git branch:'${branch}', changelog: false, poll: false, url: 'https://github.com/ikambarov/melodi.git' 
             }
             stage("Install Apache") {
                 sh 'ssh -o StrictHostKeyChecking=no -i $key $username@${nodeIP} yum install httpd -y'
